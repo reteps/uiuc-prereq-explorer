@@ -52,7 +52,7 @@
         // - "draft" only applies spectral layout 
         // - "default" improves the quality with incremental layout (fast cooling rate)
         // - "proof" improves the quality with incremental layout (slow cooling rate) 
-        quality: "default",
+        quality: "proof",
         // Use random node positions at beginning of layout
         // if this is set to false, then quality option must be "proof"
         randomize: true, 
@@ -88,15 +88,15 @@
         /* incremental layout options */
         
         // Node repulsion (non overlapping) multiplier
-        nodeRepulsion: node => 100000, // 4500,
+        nodeRepulsion: node => 5000, // 4500,
         // Ideal edge (non nested) length
-        idealEdgeLength: edge => edge.length || edge.data.length, // 50,
+        idealEdgeLength: edge => edge.data().length, // 50,
         // Divisor to compute edge forces
         edgeElasticity: edge => 0.45,
         // Nesting factor (multiplier) to compute ideal edge length for nested edges
         nestingFactor: 0.2, // 0.1,
         // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required
-        numIter: 100000, // 2500,
+        numIter: 10000, // 2500,
         // For enabling tiling
         tile: true,
         // The comparison function to be used while sorting nodes during tiling operation.
@@ -117,7 +117,7 @@
         // Gravity force (constant) for compounds
         gravityCompound: 1.0,
         // Gravity range (constant)
-        gravityRange: 3.8, 
+        gravityRange: 3.8, // 3.8, 
         // Initial cooling factor for incremental layout  
         initialEnergyOnIncremental: 0.3,
 
@@ -173,7 +173,7 @@
                         target: course + '-' + i,
                         id: prereq.course + '<->' + course + '-' + i,
                         color: '#777777',
-                        length: 100
+                        length: 10
                     }
                 }
             })
@@ -187,7 +187,7 @@
                     target: course,
                     id: course + '-' + i + '<->' + course,
                     color: '#cccccc',
-                    length: 200
+                    length: 150
                 }
             }
         })
