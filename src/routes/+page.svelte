@@ -1,4 +1,17 @@
 <script>
+    var stringToColour = function(str) {
+        var hash = 0;
+        for (var i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        var colour = '#';
+        for (var i = 0; i < 3; i++) {
+            var value = (hash >> (i * 8)) & 0xFF;
+            colour += ('00' + value.toString(16)).substr(-2);
+        }
+        return colour;
+    }
+
     import cytoscape from 'cytoscape'
     import fcose from 'cytoscape-fcose';
 
@@ -14,8 +27,10 @@
     {
       selector: 'node',
       style: {
-        'background-color': '#666',
-        'label': 'data(label)'
+        'background-color': 'data(color)',
+        'label': 'data(label)',
+        'width': 'data(size)',
+        'height': 'data(size)',
       }
     },
 
@@ -23,8 +38,8 @@
       selector: 'edge',
       style: {
         'width': 3,
-        'line-color': '#ccc',
-        'target-arrow-color': '#ccc',
+        'line-color': 'data(color)',
+        'target-arrow-color': 'data(color)',
         'target-arrow-shape': 'triangle',
         'curve-style': 'bezier'
       }
@@ -65,24 +80,23 @@
         // False for random, true for greedy sampling
         samplingType: true,
         // Sample size to construct distance matrix
-        sampleSize: 25,
+        sampleSize: 100,
         // Separation amount between nodes
-        nodeSeparation: 500, // 75,
+        nodeSeparation: 300, // 75,
         // Power iteration tolerance
         piTol: 0.0000001,
-        
         /* incremental layout options */
         
         // Node repulsion (non overlapping) multiplier
-        nodeRepulsion: node => 8000, // 4500,
+        nodeRepulsion: node => 100000, // 4500,
         // Ideal edge (non nested) length
-        idealEdgeLength: edge => 500, // 50,
+        idealEdgeLength: edge => edge.length || edge.data.length, // 50,
         // Divisor to compute edge forces
         edgeElasticity: edge => 0.45,
         // Nesting factor (multiplier) to compute ideal edge length for nested edges
         nestingFactor: 0.2, // 0.1,
         // Maximum number of iterations to perform - this is a suggested value and might be adjusted by the algorithm as required
-        numIter: 10000, // 2500,
+        numIter: 100000, // 2500,
         // For enabling tiling
         tile: true,
         // The comparison function to be used while sorting nodes during tiling operation.
@@ -130,7 +144,9 @@
         return {
             data: {
                 id: course,
-                label: course
+                label: course,
+                color: stringToColour(course.split(' ')[0]),
+                size: 25
             }
         }
     })
@@ -139,7 +155,9 @@
             return {
                 data: {
                     id: course + '-' + i,
-                    label: course + '-group-' + i
+                    label: i,
+                    color: '#777777',
+                    size: 5,
                 }
             }
         })
@@ -153,7 +171,9 @@
                     data: {
                         source: prereq.course,
                         target: course + '-' + i,
-                        id: prereq.course + '<->' + course + '-' + i
+                        id: prereq.course + '<->' + course + '-' + i,
+                        color: '#777777',
+                        length: 100
                     }
                 }
             })
@@ -165,7 +185,9 @@
                 data: {
                     source: course + '-' + i,
                     target: course,
-                    id: course + '-' + i + '<->' + course
+                    id: course + '-' + i + '<->' + course,
+                    color: '#cccccc',
+                    length: 200
                 }
             }
         })
